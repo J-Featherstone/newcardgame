@@ -15,10 +15,28 @@ class card:
 		#def _init_(self, rarity, cost, level):
 		small_card = [64, 89]
 		large_card = [small_card[0] * 2, small_card[1] * 2]
+		card_position = []
+		rarity = ""
+		size = []
+		pos_rarity_size = [[],"",[]]
 		#position is top left corner of card, size is small_card or large_card
+		def set_position(self, x, y):
+			self.card_position = [x,y]
+		def set_size_small(self):
+			self.size = self.small_card
+		def set_size_large(self):
+			self.size = self.large_card
+		def set_rarity(self, rareness_str):
+			self.rarity = rareness_str
+
 		def draw_card(self, position, size, rarity):
 			pos_size =  tuple(position + size)
 			pygame.draw.rect(screen, colours.get(rarity), pos_size)
+
+		def enlarge_card(self):
+			mouse_pos = pygame.mouse.get_pos()
+			for card in board.card_info:
+
 
 		def move_card(self):
 			global held, coordinates
@@ -26,8 +44,11 @@ class card:
 			if held:
 				coordinates = pygame.mouse.get_pos()
 
+		def add_card(self):
+			board.cards.append([self.card_position, self.rarity, self.size])
 
-
+		def remove_card(self):
+			board.cards.
 
 
 class hand:
@@ -35,6 +56,19 @@ class hand:
 	cards_in_hand = []
 	#once you have checked that the card is being clicked on this while move it around while clicked down
 	#def play_card(self):
+
+class board:
+	#card info is list of [card_position, card_rarity, card_size]
+	cards = []
+
+	def draw_board(self, card_info):
+		screen.fill([255, 255, 255])
+		screen.blit(BackGround.image, BackGround.rect)
+		for card in card_info:
+			for prs	in card:
+				pos_size = prs[0] + prs[2]
+				pygame.draw.rect(screen, colours.get(card_rarities[k]), pos_size)
+			pygame.display.flip()
 
 
 screen = pygame.display.set_mode(size)

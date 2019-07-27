@@ -1,0 +1,3 @@
+make a rectangle move when you are clicking it, then snap back when you let go
+
+redraw screen 60 times every second?
