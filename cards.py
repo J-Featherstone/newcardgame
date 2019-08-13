@@ -1,3 +1,4 @@
+import pygame
 class card:
     #def _init_(self, rarity, cost, level):
     small_card = [64, 89]
@@ -15,8 +16,8 @@ class card:
     def shrink_card(self):
         self.size = self.small_card
 
-    def select_card(self):
-        for index, card in enumerate(board.card_info):
+    def select_card(self, cards):
+        for index, card in cards:
             mouse_pos = pygame.mouse.get_pos()
             if card.position[0] < mouse_pos[0] < card.position[0] + card.size[0] and card.position[1] < mouse_pos[1] < card.position[1] + card.size[1]:
                 self.selected = True
@@ -24,6 +25,10 @@ class card:
             else:
                 self.selected = False
                 self.shrink_card()
+    def move_card(self):
+        if self.selected is True and pygame.mouse.get_pressed()[0] == True:
+            self.position[0] = list(pygame.mouse.get_pos())[0] - 64
+            self.position[1] = list(pygame.mouse.get_pos())[1] - 89
 
 
 #basic attack card
@@ -31,6 +36,6 @@ basic_attack = card()
 basic_attack.attack = 10
 basic_attack.rarity = "common"
 
-basic_block = ()
+basic_block = card()
 basic_block.block = 5
 basic_block.rarity = "common"

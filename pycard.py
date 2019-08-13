@@ -1,4 +1,4 @@
-import sys, random, rng, enemies, pygame, cards
+import sys, random, enemies, pygame, cards, copy
 from enemies import goblin
 pygame.init()
 rarities = {"common": (255, 255, 255), "uncommon": (0, 255, 0), "rare": (0, 0, 255), "epic": (255, 255, 0), "legendary": (0, 0, 0)}
@@ -14,15 +14,23 @@ class Background(pygame.sprite.Sprite):
 
 class hand:
     max_size = 7
-    cards_in_hand = []
+    cards = {}
 
     def draw_from_deck(self):
         drawn = deck.cards[0]
-        if len(self.cards_in_hand) < 7:
+        if len(self.cards) < 7:
             self.cards_in_hand.append(drawn)
             
         else:
-            discard.discard_pile.append(drawn)
+            discard_pile.cards.append(drawn)
+
+    def reset_hand_position(self):
+        #dist_between_cards = width / len(self.cards)
+        #pressed = pygame.mouse.get_pressed()
+        #if pygame.mouse.get_pressed()[0] == False:
+        for key in self.cards:
+            #print(ind)
+            self.cards[key].position = [525 + (key * 150), 700]
 
     #def check_draw(self):
 
@@ -44,38 +52,44 @@ class discard_pile:
 
 class board:
 	#card info is list of [position, card_rarity, card_size]
-    card_info = []
-    current_enemy = goblin
+    current_enemy = enemies.goblin
 
     def deck_on_screen(self, cards):
         if cards:
             pygame.draw.rect(screen, (255, 97, 3), [1400, 700, 64, 89])
 
-    def draw_board(self):
+    def draw_board(self, current_hand):
         screen.fill([255, 255, 255])
         screen.blit(BackGround.image, BackGround.rect)
         self.deck_on_screen(deck.cards)
         self.current_enemy.draw_enemy(screen)
-        for card in self.card_info:
-            pos_size = card.position + card.size
-            pygame.draw.rect(screen, rarities.get(card.rarity), pos_size)
+        current_hand.reset_hand_position()
+        for key, c in current_hand.cards.items():
+            pos_size = c.position + c.size
+            pygame.draw.rect(screen, rarities.get(c.rarity), pos_size)
         pygame.display.update()
 
 screen = pygame.display.set_mode(size)
 BackGround = Background('wood_background.jpg', [0,0])
-player_deck = deck()
-player_hand = hand()
-basic_attack = card()
-basic_attack.position = [500, 500]
-basic_attack.rarity = "common"
 game_board = board()
-game_board.card_info.append(basic_attack)
+player_deck = deck()
+current_hand = hand()
+print(cards.basic_attack.position)
+while len(current_hand.cards) < 7:
+    #used copy() to stop all basic attacks inheriting the same values.
+    current_hand.cards[len(current_hand.cards)] = copy.copy(cards.basic_attack)
+current_hand.reset_hand_position()
+#for c in current_hand.cards.items():
+    #print(c)
+print(current_hand.cards)
+
+#player_hand.cards.append(cards.basic_attack)
 
 while (1):
     goblin.draw_enemy(screen)
-    game_board.draw_board()
-    basic_attack.select_card()
-    basic_attack.move_card()
+    game_board.draw_board(current_hand)
+    cards.card.select_card(current_hand.cards)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
