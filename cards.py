@@ -1,4 +1,5 @@
 import pygame
+pygame.font.init()
 class card:
     #def _init_(self, rarity, cost, level):
     small_card = [64, 89]
@@ -9,6 +10,7 @@ class card:
     selected = False
     attack = 0
     block = 0
+    card_name = ""
     #position is top left corner of card, size is small_card or large_card
     def enlarge_card(self):
         self.size = self.large_card
@@ -31,11 +33,15 @@ class card:
             self.position[1] = list(pygame.mouse.get_pos())[1] - 89
 
 
+
+
 #basic attack card
 basic_attack = card()
 basic_attack.attack = 10
 basic_attack.rarity = "common"
+basic_attack.card_name = "Basic Attack"
 
 basic_block = card()
 basic_block.block = 5
 basic_block.rarity = "common"
+basic_block.card_name = "Basic Block"

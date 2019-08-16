@@ -1,6 +1,7 @@
 import sys, random, enemies, pygame, cards, copy
 from enemies import goblin
 pygame.init()
+pygame.font.init()
 rarities = {"common": (255, 255, 255), "uncommon": (0, 255, 0), "rare": (0, 0, 255), "epic": (255, 255, 0), "legendary": (0, 0, 0)}
 size = width, height = 1600, 900
 
@@ -66,10 +67,12 @@ class board:
         screen.blit(BackGround.image, BackGround.rect)
         self.deck_on_screen(deck.cards)
         self.current_enemy.draw_enemy(screen)
-        #current_hand.reset_hand_position()
         for key, c in current_hand.cards.items():
             pos_size = c.position + c.size
             pygame.draw.rect(screen, rarities.get(c.rarity), pos_size)
+            card_text = myfont.render(c.card_name, False, (0, 0, 0))
+            screen.blit(card_text, c.position)
+
         pygame.display.update()
 
     def select_card(self, hand_cards):
@@ -88,22 +91,31 @@ class board:
         if card.selected is True and pygame.mouse.get_pressed()[0] == True:
             card.position[0] = list(pygame.mouse.get_pos())[0] - 64
             card.position[1] = list(pygame.mouse.get_pos())[1] - 89
+        #help
+
+def end_turn():
+    pygame.draw.rect(screen, (0, 0, 128), [1400, 600, 100, 50])
+    textsurface = myfont.render('End Turn', False, (128, 128, 0))
+    screen.blit(textsurface, (1400, 605))
+    pygame.display.update()
 
 
 
 screen = pygame.display.set_mode(size)
 BackGround = Background('wood_background.jpg', [0,0])
+myfont = pygame.font.SysFont('Comic Sans MS', 23)
+bigfont = pygame.font.SysFont('Comic Sans MS', 32)
 game_board = board()
 player_deck = deck()
 current_hand = hand()
-print(cards.basic_attack.position)
+#print(cards.basic_attack.position)
 while len(current_hand.cards) < 7:
     #used copy() to stop all basic attacks inheriting the same values.
     current_hand.cards[len(current_hand.cards)] = copy.copy(cards.basic_attack)
 current_hand.reset_hand_position()
 #for c in current_hand.cards.items():
     #print(c)
-print(current_hand.cards)
+#print(current_hand.cards)
 
 #player_hand.cards.append(cards.basic_attack)
 
@@ -112,8 +124,11 @@ while (1):
     game_board.draw_board(current_hand)
     #cards.basic_attack.select_card(current_hand.cards)
     game_board.select_card(current_hand.cards)
-    print(game_board.hand_index)
+    #print(game_board.hand_index)
     game_board.move_card(current_hand.cards.get(game_board.hand_index))
+    if pygame.mouse.get_pressed()[0] == False:
+        current_hand.reset_hand_position()
+    end_turn()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
