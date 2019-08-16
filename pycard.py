@@ -54,6 +54,9 @@ class board:
 	#card info is list of [position, card_rarity, card_size]
     current_enemy = enemies.goblin
 
+    cards = []
+    hand_index = 0
+
     def deck_on_screen(self, cards):
         if cards:
             pygame.draw.rect(screen, (255, 97, 3), [1400, 700, 64, 89])
@@ -63,11 +66,30 @@ class board:
         screen.blit(BackGround.image, BackGround.rect)
         self.deck_on_screen(deck.cards)
         self.current_enemy.draw_enemy(screen)
-        current_hand.reset_hand_position()
+        #current_hand.reset_hand_position()
         for key, c in current_hand.cards.items():
             pos_size = c.position + c.size
             pygame.draw.rect(screen, rarities.get(c.rarity), pos_size)
         pygame.display.update()
+
+    def select_card(self, hand_cards):
+        for index, card in hand_cards.items():
+            mouse_pos = pygame.mouse.get_pos()
+            if card.position[0] < mouse_pos[0] < card.position[0] + card.size[0] and card.position[1] < mouse_pos[1] <\
+                card.position[1] + card.size[1]:
+                card.selected = True
+                card.enlarge_card()
+                self.hand_index = index
+            else:
+                card.selected = False
+                card.shrink_card()
+
+    def move_card(self, card):
+        if card.selected is True and pygame.mouse.get_pressed()[0] == True:
+            card.position[0] = list(pygame.mouse.get_pos())[0] - 64
+            card.position[1] = list(pygame.mouse.get_pos())[1] - 89
+
+
 
 screen = pygame.display.set_mode(size)
 BackGround = Background('wood_background.jpg', [0,0])
@@ -88,7 +110,10 @@ print(current_hand.cards)
 while (1):
     goblin.draw_enemy(screen)
     game_board.draw_board(current_hand)
-    cards.card.select_card(current_hand.cards)
+    #cards.basic_attack.select_card(current_hand.cards)
+    game_board.select_card(current_hand.cards)
+    print(game_board.hand_index)
+    game_board.move_card(current_hand.cards.get(game_board.hand_index))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
